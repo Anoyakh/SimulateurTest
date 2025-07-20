@@ -17,7 +17,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.0'  # ou 6.0.x selon votre projet
+        dotnet-version: '7.0.0'  # ou 6.0.x selon votre projet
 
     # 3) compile et lance votre simulateur
     - name: Run simulation
