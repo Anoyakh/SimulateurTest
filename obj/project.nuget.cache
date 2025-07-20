@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "00f8Z95X1R/0j1hM0VgoVLL+A/J7YcP2rIRRZL7JWYjbdHugloa/dpXOOQDaDamFDQN/V2ztRRzlJ5iIlJchzA==",
+  "success": true,
+  "projectFilePath": "/home/anoyakh/waterbattle-sim/waterbattle-sim.csproj",
+  "expectedPackageFiles": [
+    "/home/anoyakh/.nuget/packages/microsoft.netcore.app.host.linux-x64/6.0.36/microsoft.netcore.app.host.linux-x64.6.0.36.nupkg.sha512"
+  ],
+  "logs": []
+}

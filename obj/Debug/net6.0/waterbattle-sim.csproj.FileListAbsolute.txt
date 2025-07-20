@@ -1,0 +1,14 @@
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.GeneratedMSBuildEditorConfig.editorconfig
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.AssemblyInfoInputs.cache
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.AssemblyInfo.cs
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.csproj.CoreCompileInputs.cache
+/home/anoyakh/waterbattle-sim/bin/Debug/net6.0/waterbattle-sim
+/home/anoyakh/waterbattle-sim/bin/Debug/net6.0/waterbattle-sim.deps.json
+/home/anoyakh/waterbattle-sim/bin/Debug/net6.0/waterbattle-sim.runtimeconfig.json
+/home/anoyakh/waterbattle-sim/bin/Debug/net6.0/waterbattle-sim.dll
+/home/anoyakh/waterbattle-sim/bin/Debug/net6.0/waterbattle-sim.pdb
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.dll
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/refint/waterbattle-sim.dll
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.pdb
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/waterbattle-sim.genruntimeconfig.cache
+/home/anoyakh/waterbattle-sim/obj/Debug/net6.0/ref/waterbattle-sim.dll
