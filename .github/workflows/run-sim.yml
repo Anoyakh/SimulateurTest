@@ -26,16 +26,6 @@ jobs:
         dotnet run -- tuneDescent watterbattle-sim.csproj > simulation-output.txt
 
     # 4) expose le fichier de sortie pour téléchargement
-    - name: Upload results
-      uses: actions/upload-artifact@v4
-      with:
-        name: simulation-output
-        path: simulation-output.txt
-    - name: Upload simulation output
-      uses: actions/upload-artifact@v4
-      with:
-        name: simulation-output
-        path: simulation-output.txt
 
     - name: Upload tuning logs
       uses: actions/upload-artifact@v4
