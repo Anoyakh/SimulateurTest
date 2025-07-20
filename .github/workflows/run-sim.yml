@@ -1,0 +1,34 @@
+name: Simulation batch
+
+# permet de le déclencher manuellement depuis l’UI
+on:
+  workflow_dispatch:
+
+jobs:
+  run-sim:
+    runs-on: ubuntu-latest
+    # limite max = 360 minutes (6 h), modifiez à besoin
+    timeout-minutes: 360
+
+    steps:
+    # 1) récupère votre code
+    - uses: actions/checkout@v3
+
+    # 2) installe le SDK .NET
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'  # ou 6.0.x selon votre projet
+
+    # 3) compile et lance votre simulateur
+    - name: Run simulation
+      run: |
+        dotnet build
+        dotnet run --project TonSimulateur.csproj > simulation-output.txt
+
+    # 4) expose le fichier de sortie pour téléchargement
+    - name: Upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: simulation-output
+        path: simulation-output.txt
