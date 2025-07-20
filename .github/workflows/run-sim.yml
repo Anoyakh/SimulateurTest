@@ -7,8 +7,7 @@ on:
 jobs:
   run-sim:
     runs-on: ubuntu-latest
-    # limite max = 180 minutes (6 h), modifiez à besoin
-    timeout-minutes: 360
+    timeout-minutes: 180
 
     steps:
     # 1) récupère votre code
@@ -28,7 +27,7 @@ jobs:
 
     # 4) expose le fichier de sortie pour téléchargement
     - name: Upload results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: simulation-output
         path: simulation-output.txt
