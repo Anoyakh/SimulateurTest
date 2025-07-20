@@ -31,3 +31,16 @@ jobs:
       with:
         name: simulation-output
         path: simulation-output.txt
+    - name: Upload simulation output
+      uses: actions/upload-artifact@v4
+      with:
+        name: simulation-output
+        path: simulation-output.txt
+
+    - name: Upload tuning logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: tuning-outputs
+        path: |
+          logs/
+          TuningOpt/
