@@ -7,7 +7,7 @@ on:
 jobs:
   run-sim:
     runs-on: ubuntu-latest
-    # limite max = 360 minutes (6 h), modifiez à besoin
+    # limite max = 180 minutes (6 h), modifiez à besoin
     timeout-minutes: 360
 
     steps:
@@ -24,7 +24,7 @@ jobs:
     - name: Run simulation
       run: |
         dotnet build
-        dotnet run --project TonSimulateur.csproj > simulation-output.txt
+        dotnet run -- tuneDescent watterbattle-sim.csproj > simulation-output.txt
 
     # 4) expose le fichier de sortie pour téléchargement
     - name: Upload results
