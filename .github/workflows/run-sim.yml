@@ -7,7 +7,7 @@ on:
 jobs:
   run-sim:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 345
 
     steps:
     # 1) récupère votre code
