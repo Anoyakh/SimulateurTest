@@ -2756,41 +2756,40 @@ class Program
         Func<IPlayer> makeA = () =>
         {
             var dmA     = new MakeDecisionPermuted(tuningA);
-            return new CodinGameAdapter(dmA, false, timeLimitMs: 25, topX: 250);
+            return new CodinGameAdapter(dmA, false, timeLimitMs: 20, topX: 350);
         };
         Func<TuningOptions, IPlayer> makeB = opt =>
         {
             var dmB = new MakeDecisionPermuted(opt);
-            return new CodinGameAdapter(dmB, false, timeLimitMs: 25, topX: 250);
+            return new CodinGameAdapter(dmB, false, timeLimitMs: 20, topX: 350);
         };  
 
-        if (args.Length > 0 && args[0].Equals("tune", StringComparison.OrdinalIgnoreCase))
+        if (args.Length > 0 && args[0].Equals("tuneDescent", StringComparison.OrdinalIgnoreCase))
         {
             // 3) Instanciation du tuner avec factory pour A et factory paramétrée pour B
             var tuner = new Tuner(
                 start: tuningB,
                 makeFixedPlayer: makeA,
-                makePlayer:      makeB,
-                matchesPerBatch: 400
+                makePlayer: makeB,
+                matchesPerBatch: 300
             );
 
             // 4) Lancement
-            tuner.Run(maxIters: 200);
+            tuner.Run(maxIters: 100);
             tuningB = tuner.CurrentBest;
-        }
-        else if (args.Length > 0 && args[0].Equals("tuneDescent", StringComparison.OrdinalIgnoreCase))
-        {
+
+
             // 4) On instancie et on lance le tuner
-            var tuner = new CoordinateDescentTuner(
-                start:           tuningB, // point de départ
+            var tunerDescent = new CoordinateDescentTuner(
+                start: tuningB, // point de départ
                 makeFixedPlayer: makeA,               // usine pour générer A
-                makeOpponent:    makeB,               // usine pour générer B à partir de chaque opt
-                budgets:         new[] { 200 }, // paliers de successive‑halving
-                stepFraction:    0.5f,                // ±10% par pas
-                maxSweeps:       4                   // nombre de parcours sur tous les paramètres
+                makeOpponent: makeB,               // usine pour générer B à partir de chaque opt
+                budgets: new[] { 150 }, // paliers de successive‑halving
+                stepFraction: 0.4f,                // ±10% par pas
+                maxSweeps: 4                   // nombre de parcours sur tous les paramètres
             );
-            tuner.Run();
-            tuningB = tuner.Best;
+            tunerDescent.Run();
+            tuningB = tunerDescent.Best;
             // tuner.Best contient les meilleurs tuning
             // tuner.BestWinRate le win‐rate max observé
         }
