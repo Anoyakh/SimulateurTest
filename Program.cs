@@ -465,7 +465,7 @@ public class MakeDecisionPermuted : IDecisionMaker
     private readonly Dictionary<int, List<ActionSeq>> _enActions    = new();
     private readonly Dictionary<int, List<float>>     _enEvalCache  = new();
 
-    private readonly int HazardousStart = 2;
+    private readonly int HazardousStart = 0;
 
     public MakeDecisionPermuted(GameState state, TuningOptions tuning)
     {
@@ -2758,7 +2758,7 @@ class Program
                 start: tuningB,
                 makeFixedPlayer: makeA,
                 makePlayer: makeB,
-                matchesPerBatch: 600
+                matchesPerBatch: 500
             );
 
             // 4) Lancement
@@ -2773,7 +2773,7 @@ class Program
                 makeOpponent: makeB,               // usine pour générer B à partir de chaque opt
                 budgets: new[] { 160 }, // paliers de successive‑halving
                 stepFraction: 0.5f,                // ±10% par pas
-                maxSweeps: 4                   // nombre de parcours sur tous les paramètres
+                maxSweeps: 3                   // nombre de parcours sur tous les paramètres
             );
             tunerDescent.Run();
             tuningB = tunerDescent.Best;
