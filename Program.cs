@@ -2762,7 +2762,7 @@ class Program
             );
 
             // 4) Lancement
-            tuner.Run(maxIters: 150);
+            tuner.Run(maxIters: 100);
             tuningB = tuner.CurrentBest;
 
 
@@ -2772,7 +2772,7 @@ class Program
                 makeFixedPlayer: makeA,               // usine pour générer A
                 makeOpponent: makeB,               // usine pour générer B à partir de chaque opt
                 budgets: new[] { 120 }, // paliers de successive‑halving
-                stepFraction: 0.5f,                // ±10% par pas
+                stepFraction: 0.3f,                // ±10% par pas
                 maxSweeps: 3                   // nombre de parcours sur tous les paramètres
             );
             tunerDescent.Run();
