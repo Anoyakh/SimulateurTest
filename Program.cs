@@ -1746,11 +1746,22 @@ public class MatchSimulator
             var state1 = state.CloneForPlayer(pid1);
             var state2 = state.CloneForPlayer(pid2);
             // 1) Solliciter les deux IA
-            var task1 = Task.Run(() => p1.Decide(state1, pid1));
-            var task2 = Task.Run(() => p2.Decide(state2, pid2));
+            Task<IList<string>> task1;
+            Task<IList<string>> task2;
 
-            // 3) Attendre la fin des deux
-            Task.WaitAll(task1, task2);
+            if(turn%2 == 1)
+            {
+                task1 = Task.Run(() => p2.Decide(state1, pid1));
+                task2 = Task.Run(() => p1.Decide(state2, pid2));
+                Task.WaitAll(task1, task2);
+            }
+            else
+            {
+                // 1) Solliciter les deux IA
+                task1 = Task.Run(() => p1.Decide(state1, pid1));
+                task2 = Task.Run(() => p2.Decide(state2, pid2));
+                Task.WaitAll(task1, task2);
+            }
 
             // 4) Récupérer les résultats
             var cmds1 = task1.Result;
