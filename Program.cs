@@ -550,7 +550,7 @@ public class MakeDecisionPermuted : IDecisionMaker
         _territoryHelper.PrecomputeEnemyDistances();
 
         // 3) Appeler votre DecideFullEval existant
-        return DecideFullEval(timeLimitMs, topX, true);
+        return DecideFullEval(state.Turn == 1 ? 200 : timeLimitMs, topX, true);
     }
 
     static readonly Position[] ThrowOffsets = ComputeThrowOffsets();
@@ -2131,7 +2131,7 @@ public class CoordinateDescentTuner
 
                 // le 1er survivant est le meilleur
                 var winner     = survivors[0];
-                double wrate   = EvaluateWinRate(winner, 1000);
+                double wrate   = EvaluateWinRate(winner, 600);
                 string signe = (float)prop.GetValue(winner) > current ? "+" : "-";
 
                 lock(_lock)
@@ -2548,33 +2548,68 @@ public static class CommandParser
 public static class CollisionResolver
 {
     public static void ResolveMoves(
-        GameState state,
-        Dictionary<int, ActionSeq> acts1,
-        Dictionary<int, ActionSeq> acts2)
+    GameState state,
+    Dictionary<int, ActionSeq> acts1,
+    Dictionary<int, ActionSeq> acts2)
     {
-        // 1) Collecter uniquement les MOVE (agentId, dest)
+        // 1) Collecter uniquement les MOVE (agentId → dest) et source (agentId → orig)
         var moves = new Dictionary<int, Position>();
+        var sources = new Dictionary<int, Position>();
         foreach (var a in acts1.Concat(acts2))
         {
             var seq = a.Value;
             var mv = seq.Cmds.FirstOrDefault(c => c.StartsWith("MOVE "));
-            if (mv != null) moves[a.Key] = seq.Dest;
+            if (mv != null)
+            {
+                moves[a.Key] = seq.Dest;
+                // source : position actuelle de l’agent avant déplacement
+                var agent = state.AllAgents.First(x => x.AgentId == a.Key);
+                sources[a.Key] = agent.Pos;
+            }
         }
 
-        // 2) Détecter conflits
-        var destGroups = moves.GroupBy(kv => kv.Value)
-                              .Where(g => g.Count() > 1)
-                              .SelectMany(g => g.Select(kv => kv.Key))
-                              .ToHashSet();
+        // 2) Conflits où plusieurs agents ciblent la même case
+        var cancelled = new HashSet<int>();
+        var destGroups = moves
+            .GroupBy(kv => kv.Value)
+            .Where(g => g.Count() > 1)
+            .SelectMany(g => g.Select(kv => kv.Key));
+        foreach (var id in destGroups)
+            cancelled.Add(id);
 
-        // 3) Appliquer les déplacements non conflictuels
+        // 3) Conflits de type "swap" (A → B.source && B → A.source)
         foreach (var kv in moves)
         {
-            if (!destGroups.Contains(kv.Key))
+            int idA = kv.Key;
+            var destA = kv.Value;
+            // si déjà annulé, on peut sauter
+            if (cancelled.Contains(idA)) continue;
+
+            foreach (var kv2 in moves)
             {
-                var agent = state.AllAgents.First(a => a.AgentId == kv.Key);
-                agent.Pos = kv.Value;
+                int idB = kv2.Key;
+                if (idA >= idB) continue; // on ne traite chaque paire qu’une fois
+                var destB = kv2.Value;
+
+                // swap détecté si A vise la source de B et B vise la source de A
+                if (destA.Equals(sources[idB])
+                && destB.Equals(sources[idA]))
+                {
+                    cancelled.Add(idA);
+                    cancelled.Add(idB);
+                }
             }
+        }
+
+        // 4) Appliquer les déplacements pour les agents non annulés
+        foreach (var kv in moves)
+        {
+            int agentId = kv.Key;
+            if (cancelled.Contains(agentId))
+                continue;
+
+            var agent = state.AllAgents.First(a => a.AgentId == agentId);
+            agent.Pos = kv.Value;
         }
     }
 }
@@ -2738,17 +2773,17 @@ class Program
         var sim   = new MatchSimulator();
         var stats = new StatisticsCollector();  
         TuningOptions tuningA = new TuningOptions();
-        TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptions548());   
+        TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
         // 2) Factories pour créer à la volée vos deux joueurs
         Func<IPlayer> makeA = () =>
         {
             var dmA     = new MakeDecisionPermuted(tuningA);
-            return new CodinGameAdapter(dmA, false, timeLimitMs: 20, topX: 350);
+            return new CodinGameAdapter(dmA, false, timeLimitMs: 25, topX: 350);
         };
         Func<TuningOptions, IPlayer> makeB = opt =>
         {
             var dmB = new MakeDecisionPermuted(opt);
-            return new CodinGameAdapter(dmB, false, timeLimitMs: 20, topX: 350);
+            return new CodinGameAdapter(dmB, false, timeLimitMs: 25, topX: 350);
         };  
 
         if (args.Length > 0 && args[0].Equals("tuneDescent", StringComparison.OrdinalIgnoreCase))
@@ -2758,7 +2793,7 @@ class Program
                 start: tuningB,
                 makeFixedPlayer: makeA,
                 makePlayer: makeB,
-                matchesPerBatch: 500
+                matchesPerBatch: 400
             );
 
             // 4) Lancement
@@ -2772,8 +2807,8 @@ class Program
                 makeFixedPlayer: makeA,               // usine pour générer A
                 makeOpponent: makeB,               // usine pour générer B à partir de chaque opt
                 budgets: new[] { 120 }, // paliers de successive‑halving
-                stepFraction: 0.3f,                // ±10% par pas
-                maxSweeps: 3                   // nombre de parcours sur tous les paramètres
+                stepFraction: 0.2f,                // ±10% par pas
+                maxSweeps: 2                   // nombre de parcours sur tous les paramètres
             );
             tunerDescent.Run();
             tuningB = tunerDescent.Best;
