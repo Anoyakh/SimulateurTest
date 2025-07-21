@@ -1638,90 +1638,77 @@ public static class GameStateGenerator
         // 1) Dimensions aléatoires
         state.Width  = rnd.Next(12, 21);
         state.Height = rnd.Next(6, 11);
-
         int W = state.Width, H = state.Height;
-        state.Map = new Tile[W, H];
 
         // 2) Grille vide partout
+        state.Map = new Tile[W, H];
         for (int x = 0; x < W; x++)
-        for (int y = 0; y < H; y++)
-            state.Map[x, y] = new Tile { Type = TileType.Empty };
+            for (int y = 0; y < H; y++)
+                state.Map[x, y] = new Tile { Type = TileType.Empty };
 
-        // 3) Symétrie horizontale et bords vides
-        // On ne touchera que les colonnes 1..W-2 et lignes 1..H/2-1
-        const double coverColumnProb = 0.25;   // 25% de colonnes portent une paire de couvertures
-        const double highCoverProb   = 0.33;   // parmi les couvertures, 33% serons hautes
-        int halfRows = H / 2;                  // ex. H=9 → 4, H=10 →5
-
-        for (int x = 1; x < W - 1; x++)
+        // 3) Couvertures : plus nombreuses, miroir vertical (axe X = (W-1)/2)
+        const double coverCellProb = 0.30;    // 30% de chance par case
+        const double highCoverProb = 0.33;    // parmi celles-ci, 33% seront hautes
+        // Balayage sur la moitié gauche (hors bordures), symétrie sur la droite
+        for (int x = 1; x <= (W - 1) / 2; x++)
         {
-            // avec probabilité coverColumnProb, on place
-            // une couverture symétrique sur la moitié supérieure
-            if (rnd.NextDouble() < coverColumnProb && halfRows > 1)
+            int mirrorX = W - 1 - x;
+            for (int y = 1; y < H - 1; y++)
             {
-                // choisir une ligne y dans [1 .. halfRows-1]
-                int y = rnd.Next(1, halfRows);
-                var type = rnd.NextDouble() < highCoverProb
-                    ? TileType.HighCover
-                    : TileType.LowCover;
-                state.Map[x, y]             .Type = type;
-                state.Map[x, H - 1 - y]     .Type = type;
-            }
-            // si H est impair, on peut aussi placer une couverture au centre
-            if (H % 2 == 1 && rnd.NextDouble() < coverColumnProb / 2)
-            {
-                int yc = H / 2;
-                var type = rnd.NextDouble() < highCoverProb
-                    ? TileType.HighCover
-                    : TileType.LowCover;
-                state.Map[x, yc].Type = type;
+                if (rnd.NextDouble() < coverCellProb)
+                {
+                    var type = rnd.NextDouble() < highCoverProb
+                        ? TileType.HighCover
+                        : TileType.LowCover;
+                    state.Map[x,      y].Type = type;
+                    state.Map[mirrorX,y].Type = type;
+                }
             }
         }
 
-        // 4) Placer les agents
-        int perPlayer = rnd.Next(3, 6);            // entre 3 et 5
-        int totalAgents = perPlayer * 2;
+        // 4) Placement des agents symétriquement aux bords
+        int perPlayer = rnd.Next(3, 6);  // entre 3 et 5 agents par équipe
         state.InitialAgents.Clear();
         int nextId = 0;
 
-        // Pour garantir que chaque joueur a la même config,
-        // on génère d'abord 'perPlayer' positions uniques
-        var positions = new List<Position>();
-        while (positions.Count < perPlayer)
+        // Choisir 'perPlayer' lignes Y uniques où il n'y a pas de couverture
+        var ys = new HashSet<int>();
+        while (ys.Count < perPlayer)
         {
-            int x = rnd.Next(1, W - 1);
-            int y = rnd.Next(1, H / 2);  // moitié supérieure
-            var p = new Position(x, y);
-            if (!positions.Contains(p) && state.Map[x, y].Type == TileType.Empty)
-                positions.Add(p);
+            int y = rnd.Next(0, H);
+            // s’assurer que ni (0,y) ni (W-1,y) n’est sous couverture
+            if (state.Map[0, y].Type == TileType.Empty &&
+                state.Map[W - 1, y].Type == TileType.Empty)
+            {
+                ys.Add(y);
+            }
         }
 
-        for (int i = 0; i < perPlayer; i++)
+        // Pour chaque Y, placer un agent en (0,y) pour P0 et (W-1,y) pour P1
+        foreach (var y in ys)
         {
-            Position p1 = positions[i];
-            Position p2 = new Position(p1.X, H - 1 - p1.Y);
-
-            // Stats aléatoires identiques pour le couple
+            // Stats identiques pour le couple
             int cd    = rnd.Next(1, 5);
-            int orng  = rnd.Next(3, 6);
-            int sp    = rnd.Next(10, 30);
+            int orng  = rnd.Next(3, 8);
+            int sp    = rnd.Next(10, 24);
             int bombs = rnd.Next(0, 3);
 
-            // Agent du joueur 0
+            // Joueur 0 à x=0
             state.InitialAgents.Add(new AgentData {
                 AgentId       = nextId++,
                 PlayerId      = 0,
-                Pos           = p1,
+                Pos           = new Position(0, y),
                 ShootCooldown = cd,
                 OptimalRange  = orng,
                 SoakingPower  = sp,
                 SplashBombs   = bombs
             });
-            // Agent symétrique du joueur 1
+
+            // Joueur 1 position miroir à x=W-1
             state.InitialAgents.Add(new AgentData {
                 AgentId       = nextId++,
                 PlayerId      = 1,
-                Pos           = p2,
+                Pos           = new Position(W - 1, y),
                 ShootCooldown = cd,
                 OptimalRange  = orng,
                 SoakingPower  = sp,
@@ -1729,7 +1716,7 @@ public static class GameStateGenerator
             });
         }
 
-        // 5) Finaliser AllAgents avec positions & stats
+        // 5) Initialisation finale des AgentState
         state.InitializeAgentsFromData();
 
         return state;
