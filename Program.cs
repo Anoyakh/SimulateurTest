@@ -1445,8 +1445,8 @@ public class TerritoryHelper
             {
                 _cellX[idx] = x;
                 _cellY[idx] = y;
-                if (state.Map[x, y].Type == TileType.Empty)
-                    _emptyCells.Add(idx);
+                //if (state.Map[x, y].Type == TileType.Empty)
+                _emptyCells.Add(idx);
             }
         }
     }
@@ -2784,17 +2784,17 @@ class Program
         var sim   = new MatchSimulator();
         var stats = new StatisticsCollector();  
         TuningOptions tuningA = new TuningOptions();
-        TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
+        TuningOptions tuningB = new TuningOptions();//TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
         // 2) Factories pour créer à la volée vos deux joueurs
         Func<IPlayer> makeA = () =>
         {
             var dmA     = new MakeDecisionPermuted(tuningA);
-            return new CodinGameAdapter(dmA, false, timeLimitMs: 25, topX: 350);
+            return new CodinGameAdapter(dmA, false, timeLimitMs: 35, topX: 500);
         };
         Func<TuningOptions, IPlayer> makeB = opt =>
         {
             var dmB = new MakeDecisionPermuted(opt);
-            return new CodinGameAdapter(dmB, false, timeLimitMs: 25, topX: 350);
+            return new CodinGameAdapter(dmB, false, timeLimitMs: 35, topX: 500);
         };  
 
         if (args.Length > 0 && args[0].Equals("tuneDescent", StringComparison.OrdinalIgnoreCase))
