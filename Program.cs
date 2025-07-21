@@ -2784,7 +2784,7 @@ class Program
     {
         var sim   = new MatchSimulator();
         var stats = new StatisticsCollector();  
-        TuningOptions tuningA = new TuningOptions();
+        TuningOptions tuningA = TuningOptionsConverter.FromInterface(new TuningOptionsCustom()); 
         TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
         // 2) Factories pour créer à la volée vos deux joueurs
         Func<IPlayer> makeA = () =>
