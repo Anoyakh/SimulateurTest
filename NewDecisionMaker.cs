@@ -986,6 +986,7 @@ public class NewDecisionMaker : IDecisionMaker
         // on peut créer un nouvel objet pour le cache :
             var lookaheadDM = new NewDecisionMaker(lookaheadState, Tuning);
             lookaheadDM._territoryHelper = new TerritoryHelper(lookaheadState);
+            lookaheadDM._territoryHelper.PrecomputeEnemyDistances(lookaheadState);
             lookaheadDM.RecomputePerTurnCaches();
 
             // Danger zones & throw targets sur lookaheadState
