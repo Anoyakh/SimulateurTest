@@ -1749,19 +1749,20 @@ public class MatchSimulator
             Task<IList<string>> task1;
             Task<IList<string>> task2;
 
-            if(turn%2 == 1)
+            if (turn % 2 == 1)
             {
-                task1 = Task.Run(() => p2.Decide(state1, pid1));
-                task2 = Task.Run(() => p1.Decide(state2, pid2));
-                Task.WaitAll(task1, task2);
+                // On lance p1 d’abord puis p2, pour équilibrer la charge,
+                // mais on ne change pas qui commande quel camp.
+                task1 = Task.Run(() => p1.Decide(state1, pid1));
+                task2 = Task.Run(() => p2.Decide(state2, pid2));
             }
             else
             {
-                // 1) Solliciter les deux IA
-                task1 = Task.Run(() => p1.Decide(state1, pid1));
                 task2 = Task.Run(() => p2.Decide(state2, pid2));
-                Task.WaitAll(task1, task2);
+                task1 = Task.Run(() => p1.Decide(state1, pid1));
             }
+            
+            Task.WaitAll(task1, task2);
 
             // 4) Récupérer les résultats
             var cmds1 = task1.Result;
@@ -2784,7 +2785,7 @@ class Program
         var sim   = new MatchSimulator();
         var stats = new StatisticsCollector();  
         TuningOptions tuningA = new TuningOptions();
-        TuningOptions tuningB = new TuningOptions();//TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
+        TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
         // 2) Factories pour créer à la volée vos deux joueurs
         Func<IPlayer> makeA = () =>
         {
