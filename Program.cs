@@ -2784,8 +2784,8 @@ class Program
     {
         var sim   = new MatchSimulator();
         var stats = new StatisticsCollector();  
-        TuningOptions tuningA = TuningOptionsConverter.FromInterface(new TuningOptionsCustom()); 
-        TuningOptions tuningB = TuningOptionsConverter.FromInterface(new TuningOptionsCustom());   
+        TuningOptions tuningA = new(); 
+        TuningOptions tuningB = new();    
         // 2) Factories pour créer à la volée vos deux joueurs
         Func<IPlayer> makeA = () =>
         {
@@ -2794,7 +2794,7 @@ class Program
         };
         Func<TuningOptions, IPlayer> makeB = opt =>
         {
-            var dmB = new MakeDecisionPermuted(opt);
+            var dmB = new NewDecisionMaker(opt);
             return new CodinGameAdapter(dmB, false, timeLimitMs: 35, topX: 500);
         };  
 
@@ -2832,7 +2832,7 @@ class Program
 
         // Vos decision makers
         IDecisionMaker dmAFinal = new MakeDecisionPermuted(tuningA);
-        IDecisionMaker dmBFinal = new MakeDecisionPermuted(tuningB);
+        IDecisionMaker dmBFinal = new NewDecisionMaker(tuningB);
 
         // Les adapter en IPlayer pour le simulateur
         IPlayer playerA = new CodinGameAdapter(dmAFinal, false, timeLimitMs: 50, topX: 600);
