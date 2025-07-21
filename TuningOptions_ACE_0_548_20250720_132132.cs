@@ -1,55 +1,55 @@
-public class TuningOptions548 : ITuningOptions
+public class TuningOptionsCustom : ITuningOptions
 {
     /// <summary>Mort mort mort</summary>
-    public float DeathPenalty { get; set; } = 8081.3574f;
+    public float DeathPenalty { get; set; } = 10000f;
 
     /// <summary>x case contrôlées</summary>
-    public float TerritoryWeight { get; set; } = 5.0497f;
+    public float TerritoryWeight { get; set; } = 2f;
 
     /// <summary>x kill nettes</summary>
-    public float KillWeight { get; set; } = 50.5288f;
+    public float KillWeight { get; set; } = 55f;
 
     /// <summary>Δ somme (100–wetness)</summary>
-    public float HealthDifferenceWeight { get; set; } = 0.0764f;
+    public float HealthDifferenceWeight { get; set; } = 0.075f;
 
     /// <summary>wettest ennemi</summary>
-    public float MaxWetnessWeight { get; set; } = 0.1251f;
+    public float MaxWetnessWeight { get; set; } = 0.15f;
 
     /// <summary>2+ agents dans même splash</summary>
-    public float MultiHitPenalty { get; set; } = 39.2052f;
+    public float MultiHitPenalty { get; set; } = 44f;
 
     /// <summary>land in enemy bomb zone</summary>
-    public float DangerZonePenalty { get; set; } = 24.1444f;
+    public float DangerZonePenalty { get; set; } = 33f;
 
     /// <summary>penalty for hazardZones (no‑shoot)</summary>
-    public float HazardZonePenalty { get; set; } = 5.6161f;
+    public float HazardZonePenalty { get; set; } = 4f;
 
     /// <summary>turn<4 movement penalty</summary>
-    public float EarlyGamePenalty { get; set; } = 4.5863f;
+    public float EarlyGamePenalty { get; set; } = 4.5f;
 
     /// <summary>encourage rapprochement vers cibles</summary>
-    public float ProximityBonus { get; set; } = 0.3349f;
+    public float ProximityBonus { get; set; } = 0.4f;
 
     /// <summary>Bonus de couverture</summary>
-    public float CoverBonus { get; set; } = 3.0501f;
+    public float CoverBonus { get; set; } = 2.9f;
 
     /// <summary>punition somme des cooldowns</summary>
-    public float CooldownPenaltyFactor { get; set; } = 0.1118f;
+    public float CooldownPenaltyFactor { get; set; } = 0.11f;
 
     /// <summary>pour chaque shoot sans dégât</summary>
-    public float WastedShootPenalty { get; set; } = 8.5808f;
+    public float WastedShootPenalty { get; set; } = 8.5f;
 
     /// <summary>malus prime pour THROW</summary>
-    public float ThrowWastePenalty { get; set; } = 12.0152f;
+    public float ThrowWastePenalty { get; set; } = 8.3f;
 
     /// <summary>touche cible</summary>
-    public float ThrowCenterHitBonus { get; set; } = 11.8759f;
+    public float ThrowCenterHitBonus { get; set; } = 9.5f;
 
     /// <summary>touche case adj vide</summary>
-    public float ThrowAdjacentHitBonus { get; set; } = 4.8011f;
+    public float ThrowAdjacentHitBonus { get; set; } = 3.95f;
 
     /// <summary>ennemi adjacent</summary>
-    public float ThrowNearEnemyBonus { get; set; } = 2.1615f;
+    public float ThrowNearEnemyBonus { get; set; } = 2.6f;
 
     // Beam‑search / permu (fixe, non tunable)
     public int TopPermutationsLimit { get; set; } = 600;
