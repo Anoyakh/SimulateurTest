@@ -493,7 +493,7 @@ public class MakeDecisionPermuted : IDecisionMaker
 
         // Pré‑préparer le Territoire
         _territoryHelper = new TerritoryHelper(_initialState);
-        _territoryHelper.PrecomputeEnemyDistances();
+        _territoryHelper.PrecomputeEnemyDistances(_initialState);
     }
 
     /// <summary>
@@ -547,7 +547,7 @@ public class MakeDecisionPermuted : IDecisionMaker
 
         // 2) Mettre à jour le helper Voronoi
         _territoryHelper = new TerritoryHelper(_initialState);
-        _territoryHelper.PrecomputeEnemyDistances();
+        _territoryHelper.PrecomputeEnemyDistances(_initialState);
 
         // 3) Appeler votre DecideFullEval existant
         return DecideFullEval(state.Turn == 1 ? 200 : timeLimitMs, topX, true);
@@ -1452,12 +1452,12 @@ public class TerritoryHelper
     }
 
     /// <summary>À appeler au début de chaque tour, une fois que state.AllAgents est à jour.</summary>
-    public void PrecomputeEnemyDistances()
+    public void PrecomputeEnemyDistances(GameState state)
     {
         int n = _emptyCells.Count;
         _enemyMinDist = new int[n];
 
-        var enemies = _state.EnemyAgents;
+        var enemies = state.EnemyAgents;
         for (int i = 0; i < n; i++)
         {
             int cellId = _emptyCells[i];
@@ -1797,7 +1797,7 @@ public class MatchSimulator
             state.PruneDeadAgents();
 
             var helper = new TerritoryHelper(state);
-            helper.PrecomputeEnemyDistances();
+            helper.PrecomputeEnemyDistances(state);
 
             // 1) Calculer la différence de territoire
             var myFinals = state.AllAgents.Where(a => a.PlayerId == pid1).Select(a => (agent: a, dest: a.Pos)).ToList();
@@ -2766,7 +2766,7 @@ public class MatchResult
 
         // diff de territoire instantanée en fin de partie
         var helper = new TerritoryHelper(finalState);
-        helper.PrecomputeEnemyDistances();
+        helper.PrecomputeEnemyDistances(finalState);
         var myFinals = finalState
             .MyAgents
             .Select(a => (agent: a, dest: a.Pos))
